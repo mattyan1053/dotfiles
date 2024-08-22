@@ -12,3 +12,6 @@ chezmoiがインストール済みの場合
 ```sh
 chezmoi init --ssh --apply mattyan1053
 ```
+
+## Usage
+
