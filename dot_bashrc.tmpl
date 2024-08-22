@@ -15,9 +15,7 @@ export PATH
 # Uncomment the following line if you don't like systemctl's auto-paging feature:
 # export SYSTEMD_PAGER=
 
-# User specific aliases and functions
-export PATH="$HOME/.rbenv/bin:$HOME/.local/share/chezmoi/bin:$PATH"
-eval "$(rbenv init - bash)"
+export PATH="$HOME/.local/share/chezmoi/bin:$PATH"
 
 source $HOME/.git-completion.sh
 source $HOME/.git-prompt.sh
@@ -29,3 +27,8 @@ GIT_PS1_SHOWUPSTREAM=auto
 
 PROMPT_COMMAND='. ~/.bash_prompt'
 
+# User specific aliases and functions
+if [ -f "$HOME/.rbenv/bin/rbenv" ]; then
+  export PATH="$HOME/.rbenv/bin:$PATH"
+  eval "$(rbenv init - bash)"
+fi
