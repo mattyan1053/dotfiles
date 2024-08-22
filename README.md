@@ -1,4 +1,5 @@
 # mattyan1053 dotfiles
+chezmoiを利用したdotfiles管理リポジトリ
 
 ## How to install
 ※clone先は `~/.local/share/chezmoi/` で固定
