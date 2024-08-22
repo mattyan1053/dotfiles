@@ -13,6 +13,10 @@ chezmoiがインストール済みの場合
 chezmoi init --ssh --apply mattyan1053
 ```
 
+## Dependencies
+- [MesloLGS NF Regular](https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Regular.ttf)
+  - bashの表示に利用しているフォントがあるため推奨
+
 ## Usage
 
 ```sh
