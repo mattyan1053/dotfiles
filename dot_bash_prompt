@@ -7,7 +7,7 @@ is_writable() {
   test -w .
 }
 
-PS1='\[\e[0m\]\e[30;47m\] \t \e[37;44m\] \u@\h \e[00m\]\[\e[34;41m\]'
+PS1='\[\e[0m\]\e[30;47m\]  \t \e[37;44m\]\e[37;44m\] \u@\h \e[00m\]\[\e[34;41m\]'
 if is_home; then
   PS1+='\[\e[00;41m\]  \w '
 elif is_writable; then
@@ -15,4 +15,9 @@ elif is_writable; then
 else
   PS1+='\[\e[00;41m\]  \w '
 fi
-PS1+='\[\e[31;43m\] \e[30;43m\]  $(__git_ps1 "%s")\e[33;49m\]\[\e[00m\]\n\$ '
+
+if [[ -z $(git rev-parse --is-inside-work-tree 2> /dev/null) ]]; then
+  PS1+='\[\e[31;49m\]\[\e[00m\]\n\$ '
+else
+  PS1+='\[\e[31;43m\] \e[30;43m\]  $(__git_ps1 "%s") \e[33;49m\]\[\e[00m\]\n\$ '
+fi
