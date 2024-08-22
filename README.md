@@ -15,3 +15,10 @@ chezmoi init --ssh --apply mattyan1053
 
 ## Usage
 
+```sh
+$ chezmoi add ~/.hoge # chezmoi管理対象に追加する
+$ chezmoi re-add # 管理対象を更新する
+$ chezmoi update # dotfilesをpullする
+$ chezmoi apply # 変更を適用する
+```
+
