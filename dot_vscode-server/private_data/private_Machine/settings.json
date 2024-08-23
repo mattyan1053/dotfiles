@@ -1,0 +1,11 @@
+{
+    "terminal.integrated.fontFamily": "MesloLGS NF",
+    "files.insertFinalNewline": true,
+    "files.eol": "\n",
+    "editor.rulers": [
+        80
+    ],
+    "editor.renderWhitespace": "boundary",
+    "vim.useSystemClipboard": true,
+    "vim.hlsearch": true
+}
