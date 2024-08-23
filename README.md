@@ -2,17 +2,19 @@
 chezmoiを利用したdotfiles管理リポジトリ
 
 ## How to install
-※clone先は `~/.local/share/chezmoi/` で固定
+※ clone先は `~/.local/share/chezmoi/` で固定
 
 chezmoiが未インストールの場合
 ```sh
-sh -c "$(curl -fsLS get.chezmoi.io)" -- init --ssh --apply mattyan1053
+sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply mattyan1053
 ```
 
 chezmoiがインストール済みの場合
 ```sh
-chezmoi init --ssh --apply mattyan1053
+chezmoi init --apply mattyan1053
 ```
+
+ssh経由でcloneしてくる場合、`--ssh`オプションをつけること。
 
 ## Dependencies
 - [MesloLGS NF Regular](https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Regular.ttf)
