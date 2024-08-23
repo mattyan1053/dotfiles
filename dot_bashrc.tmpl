@@ -27,6 +27,9 @@ GIT_PS1_SHOWUPSTREAM=auto
 
 PROMPT_COMMAND='. ~/.bash_prompt'
 
+HISTTIMEFORMAT='%F %T '
+HISTFILESIZE=5000
+
 # User specific aliases and functions
 if [ -f "$HOME/.rbenv/bin/rbenv" ]; then
   export PATH="$HOME/.rbenv/bin:$PATH"
@@ -35,3 +38,32 @@ fi
 
 # Setup fzf
 eval "$(fzf --bash)"
+
+# fzf useful functions
+## fzf_checkout - checkout git branch
+fzf_checkout() {
+  local branches branch
+  branches=$(git branch -vv) &&
+  branch=$(echo "$branches" | fzf +m) &&
+  git checkout $(echo "$branch" | awk '{print $1}' | sed "s/.* //")
+}
+
+## fzf_gitlog - git commit browser
+fzf_gitlog() {
+  git log --graph --color=always \
+      --format="%C(auto)%h%d %s %C(black)%C(bold)%cr" "$@" |
+  fzf --ansi --no-sort --reverse --tiebreak=index --bind=ctrl-s:toggle-sort \
+      --bind "ctrl-m:execute:
+                (grep -o '[a-f0-9]\{7\}' | head -1 |
+                xargs -I % sh -c 'git show --color=always % | less -R') << 'FZF-EOF'
+                {}
+FZF-EOF"
+}
+
+## fcd - cd to selected directory
+fcd() {
+  local dir
+  dir=$(find ${1:-.} -path '*/\.*' -prune \
+                  -o -type d -print 2> /dev/null | fzf +m) &&
+  cd "$dir"
+}
