@@ -19,5 +19,5 @@ fi
 if [[ -z $(git rev-parse --is-inside-work-tree 2> /dev/null) ]]; then
   PS1+='\[\e[31;49m\]\[\e[00m\]\n\$ '
 else
-  PS1+='\[\e[31;43m\] \e[30;43m\]  $(__git_ps1 "%s") \e[33;49m\]\[\e[00m\]\n\$ '
+  PS1+='\[\e[31;43m\]\e[30;43m\]  $(__git_ps1 "%s") \e[33;49m\]\[\e[00m\]\n\$ '
 fi
