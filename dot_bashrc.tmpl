@@ -13,6 +13,7 @@ fi
 export PATH
 
 alias ll='ls -l --color=auto'
+alias lgit='lazygit'
 
 # Uncomment the following line if you don't like systemctl's auto-paging feature:
 # export SYSTEMD_PAGER=
@@ -43,7 +44,7 @@ eval "$(fzf --bash)"
 
 # fzf useful functions
 ## fzf_checkout - checkout git branch
-fzf_checkout() {
+fcheckout() {
   local branches branch
   branches=$(git branch -vv) &&
   branch=$(echo "$branches" | fzf +m) &&
@@ -51,7 +52,7 @@ fzf_checkout() {
 }
 
 ## fzf_gitlog - git commit browser
-fzf_gitlog() {
+fgitlog() {
   git log --graph --color=always \
       --format="%C(auto)%h%d %s %C(black)%C(bold)%cr" "$@" |
   fzf --ansi --no-sort --reverse --tiebreak=index --bind=ctrl-s:toggle-sort \
