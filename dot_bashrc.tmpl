@@ -71,3 +71,8 @@ fcd() {
                   -o -type d -print 2> /dev/null | fzf +m) &&
   cd "$dir"
 }
+
+# bash から zsh へ自動切り替え
+if [ -t 1 ]; then
+  exec zsh
+fi
