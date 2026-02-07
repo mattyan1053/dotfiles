@@ -35,3 +35,11 @@ $ install-p10k.sh # powerlevel10k のインストール
 $ install-zsh-autosuggestions.sh # zsh-autosuggestions のインストール
 ```
 
+### Neovim 設定
+Neovim v0.9.0以上推奨。`:PackerSync` を実行する。
+```sh
+# Packerの追加
+git clone --depth 1 https://github.com/wbthomason/packer.nvim \
+ ~/.local/share/nvim/site/pack/packer/start/packer.nvim
+```
+

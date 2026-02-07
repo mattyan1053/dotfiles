@@ -41,7 +41,6 @@ nmap <Esc><Esc> :nohlsearch<CR><Esc> " ESC連打でハイライト解除
 " ビジュアル関連
 "--------------------------------
 syntax on " シンタックスをオン
-colorscheme elflord " カラースキームをelflordに
 set ruler " カーソル位置を右下に
 set cursorline " カーソルラインをハイライト
 set number " 行番号を表示
