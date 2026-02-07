@@ -1,28 +1,91 @@
 # ==== Commit Messages ====
 
 # ==== Commit Messages(Template) ====
-# :emoji: #Issue番号 変更内容
-# 例) :+1: #438 コメント追加
-#       👍 #438 コメント追加
+# :emoji: [scope] message
+# 例) :bug: [ui] fix bugs
 #
-# ==== Emojis ====
-# 🐛  :bug: バグ修正
-# 🎨  :art: デザイン変更
-# 📝  :memo: 文言修正
-# 🐎  :racehorse: パフォーマンスの改善
-# 💚  :green_heart: CIの修正・改善
-# ✅  :white_check_mark: テストの修正・改善
-# 👍  :+1: 機能改善
-# 🔥  :fire: 不要な機能・使われなくなった機能の削除
-# ✨  :sparkles: 部分的な機能追加
-# 👮  :cop: セキュリティ関連の改善
-# ♻️  :recycle: リファクタリング
-# 💢  :anger: コンフリクト
-# ⚙️  :gear: config変更
-# 👕  :shirt: Lintエラーの修正やコードスタイルの修正
-# ⬆️  :arrow_up: 依存関係のアップグレード
-# ⬇️  :arrow_down: 依存関係のダウングレード
-# 📚  :books: ドキュメントの修正
-# 🚋  :train: インフラコードの修正
-# 🚧  :construction: WIP
-
+# ==== Emojis (High Frequency) ====
+# ✨ :sparkles: 新機能を導入する。
+# 🐛 :bug: バグを修正する。
+# ♻️ :recycle: コードをリファクタリングする。
+# 📝 :memo: ドキュメントを追加または更新する。
+# 🎨 :art: コードの構造やフォーマットを改善する。
+# 🚧 :construction: 作業中。
+# ✅ :white_check_mark: テストを追加、更新、またはパスさせる。
+# 🔧 :wrench: 設定ファイルを変更または更新する。
+# 💄 :lipstick: UIとスタイルファイルを追加または更新する。
+# 🚀 :rocket: デプロイする。
+# 🔒️ :lock: セキュリティまたはプライバシーの問題を修正する。
+# 🏷️ :label: 型（Type）を追加または更新する。
+# 🧹 :wastebasket: 整理が必要なコードを非推奨にする（Deprecate）。
+#
+# ==== Emojis (Dependencies & Build) ====
+# ➕ :heavy_plus_sign: 依存関係を追加する。
+# ➖ :heavy_minus_sign: 依存関係を削除する。
+# ⬆️ :arrow_up: 依存関係をアップグレードする。
+# ⬇️ :arrow_down: 依存関係をダウングレードする。
+# 📌 :pushpin: 依存関係を特定バージョンに固定する。
+# 👷 :construction_worker: CIビルドシステムを追加または更新する。
+# 💚 :green_heart: CIビルドを修正する。
+# 📦️ :package: コンパイル済みのファイルやパッケージを追加または更新する。
+# ⚡️ :zap: パフォーマンスを改善する。
+#
+# ==== Emojis (Management & Operations) ====
+# 🎉 :tada: プロジェクトを開始する。
+# 🔖 :bookmark: リリース / バージョンのタグ付け。
+# 🚑️ :ambulance: 致命的なホットフィックス。
+# ⏪️ :rewind: 変更を元に戻す（リバート）。
+# 🔀 :twisted_rightwards_arrows: ブランチをマージする。
+# 💥 :boom: 破壊的変更（Breaking Changes）を導入する。
+# 🐳 :docker: Dockerの設定など（※Gitmoji標準にはないがよく使われる）
+# 🧱 :bricks: インフラ関連の変更を行う。
+# 🌐 :globe_with_meridians: 国際化と地域化。
+#
+# ==== Emojis (Specific Contexts) ====
+# ✏️ :pencil2: タイプミスを修正する。
+# 🗃️ :card_file_box: データベース関連の変更を行う。
+# 👔 :necktie: ビジネスロジックを追加または更新する。
+# 🦺 :safety_vest: バリデーション関連のコードを追加または更新する。
+# 👽️ :alien: 外部APIの変更に合わせてコードを更新する。
+# 📄 :page_facing_up: ライセンスを追加または更新する。
+# 🍱 :bento: アセットを追加または更新する。
+# ♿️ :wheelchair: アクセシビリティを改善する。
+# 💡 :bulb: ソースコードにコメントを追加または更新する。
+# 🔊 :loud_sound: ログを追加または更新する。
+# 🔇 :mute: ログを削除する。
+# 👥 :busts_in_silhouette: コントリビューターを追加または更新する。
+# 🚸 :children_crossing: UX（ユーザーエクスペリエンス）やユーザビリティを改善する。
+# 📱 :iphone: レスポンシブデザイン対応を行う。
+# 🔍️ :mag: SEOを改善する。
+# 🥅 :goal_net: エラーを捕捉（キャッチ）する。
+# 🛂 :passport_control: 認可、ロール、権限に関連するコードを修正する。
+# 🩹 :adhesive_bandage: 致命的ではない問題の単純な修正。
+# 🧐 :monocle_face: データの探索や検査を行う。
+# ⚰️ :coffin: デッドコードを削除する。
+# 🧪 :test_tube: 失敗するテストを追加する（テスト駆動開発など）。
+# 🩺 :stethoscope: ヘルスチェックを追加または更新する。
+# 🧑‍💻 :technologist: 開発者体験（DX）を改善する。
+# 🧵 :thread: マルチスレッドや並行処理に関連するコードを追加または更新する。
+#
+# ==== Emojis (Low Frequency / Fun / Misc) ====
+# 🔥 :fire: コードやファイルを削除する。
+# 🚚 :truck: リソース（ファイル、パス、ルートなど）を移動または名前変更する。
+# 🏗️ :building_construction: アーキテクチャを変更する。
+# 🔨 :hammer: 開発スクリプトを追加または更新する。
+# 📈 :chart_with_upwards_trend: 分析または追跡コードを追加または更新する。
+# 🚨 :rotating_light: コンパイラ / リンターの警告を修正する。
+# 🔐 :closed_lock_with_key: シークレットを追加または更新する。
+# 🌱 :seedling: シードファイルを追加または更新する。
+# 🚩 :triangular_flag_on_post: 機能フラグ（Feature Flag）を追加、更新、または削除する。
+# 💫 :dizzy: アニメーションやトランジションを追加または更新する。
+# 🤡 :clown_face: モックを作成する。
+# 🥚 :egg: イースターエッグを追加または更新する。
+# 🙈 :see_no_evil: .gitignoreファイルを追加または更新する。
+# 📸 :camera_flash: スナップショットを追加または更新する。
+# ⚗️ :alembic: 実験を行う（試行錯誤など）。
+# 💸 :money_with_wings: スポンサーや資金関連のインフラを追加する。
+# ✈️ :airplane: オフラインサポートを改善する。
+# 🦖 :t-rex: 後方互換性を追加するコード。
+# 💩 :poop: 改善が必要な質の悪いコードを書く。
+# 🍻 :beers: 酔っ払ってコードを書く。
+# 💬 :speech_balloon: テキストやリテラルを追加または更新する。
