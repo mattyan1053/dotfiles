@@ -17,8 +17,11 @@ chezmoi init --apply mattyan1053
 ssh経由でcloneしてくる場合、`--ssh`オプションをつけること。
 
 ## Dependencies
+- Bash v5.1.8 以上
+- Zsh v5.8 以上
+- Neovim v0.11.6 以上
 - [MesloLGS NF Regular](https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Regular.ttf)
-  - bashの表示に利用しているフォントがあるため推奨
+  - bash/zshの表示に利用しているフォントがあるため推奨
 
 ## Usage
 
@@ -28,18 +31,3 @@ $ chezmoi re-add # 管理対象を更新する
 $ chezmoi update # dotfilesをpullする
 $ chezmoi apply # 変更を適用する
 ```
-
-### zsh で利用する場合
-```sh
-$ install-p10k.sh # powerlevel10k のインストール
-$ install-zsh-autosuggestions.sh # zsh-autosuggestions のインストール
-```
-
-### Neovim 設定
-Neovim v0.9.0以上推奨。`:PackerSync` を実行する。
-```sh
-# Packerの追加
-git clone --depth 1 https://github.com/wbthomason/packer.nvim \
- ~/.local/share/nvim/site/pack/packer/start/packer.nvim
-```
-
