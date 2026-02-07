@@ -32,5 +32,6 @@ $ chezmoi apply # 変更を適用する
 ### zsh で利用する場合
 ```sh
 $ install-p10k.sh # powerlevel10k のインストール
+$ install-zsh-autosuggestions.sh # zsh-autosuggestions のインストール
 ```
 
