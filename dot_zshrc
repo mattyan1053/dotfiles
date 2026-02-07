@@ -11,6 +11,6 @@ autoload -Uz compinit
 compinit
 
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-[[ ! -f ~/powerlevel10k/powerlevel10k.zsh-theme ]] || source ~/powerlevel10k/powerlevel10k.zsh-theme
+[[ ! -f ~/.local/share/powerlevel10k/powerlevel10k.zsh-theme ]] || source ~/.local/share/powerlevel10k/powerlevel10k.zsh-theme
 
 alias gl='git log --oneline --graph --decorate'
