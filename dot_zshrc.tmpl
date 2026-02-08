@@ -17,9 +17,17 @@ autoload -Uz compinit
 compinit
 
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+# zsh-users
 [[ ! -f ~/.zsh/zsh-completions/zsh-completions.zsh ]] || source ~/.zsh/zsh-completions/zsh-completions.zsh
 [[ ! -f ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh ]] || source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
 [[ ! -f ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]] || source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+[[ ! -f ~/.zsh/zsh-history-substring-search/zsh-history-substring-search.zsh ]] || source ~/.zsh/zsh-history-substring-search/zsh-history-substring-search.zsh
+
+bindkey '^[[A' history-substring-search-up
+bindkey '^[[B' history-substring-search-down
+
+# themes
 [[ ! -f ~/.local/share/powerlevel10k/powerlevel10k.zsh-theme ]] || source ~/.local/share/powerlevel10k/powerlevel10k.zsh-theme
 
 # Aliases
