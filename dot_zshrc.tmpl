@@ -38,3 +38,14 @@ bindkey '^[[B' history-substring-search-down
 for f in ~/.zsh/aliases/*.zsh; do
     source "$f"
 done
+
+# History
+HISTFILE=~/.zsh_history
+HISTSIZE=5000
+SAVEHIST=5000
+
+setopt EXTENDED_HISTORY
+setopt INC_APPEND_HISTORY
+setopt SHARE_HISTORY
+setopt HIST_IGNORE_DUPS
+setopt HIST_REDUCE_BLANKS
