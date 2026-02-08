@@ -72,6 +72,9 @@ fcd() {
   cd "$dir"
 }
 
+# ~/.bashrc
+[ -f ~/.bashrc.local ] && source ~/.bashrc.local
+
 # bash から zsh へ自動切り替え
 if [ -t 1 ]; then
   exec zsh
