@@ -1,0 +1,4 @@
+[".zsh/zsh-docker-compose-exec-mode"]
+    type = "git-repo"
+    url = "https://github.com/mattyan1053/zsh-docker-compose-exec-mode.git"
+    clone.args = ["--depth", "1", "-b", "main"]

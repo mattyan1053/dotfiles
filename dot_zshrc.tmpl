@@ -34,6 +34,9 @@ bindkey '^[[B' history-substring-search-down
 [[ ! -f ~/.zsh/fzf-tab/fzf-tab.zsh ]] || source ~/.zsh/fzf-tab/fzf-tab.zsh
 [[ ! -f ~/.zsh/zsh-fzf-history-search/zsh-fzf-history-search.zsh ]] || source ~/.zsh/zsh-fzf-history-search/zsh-fzf-history-search.zsh
 
+# my plugins
+[[ ! -f ~/.zsh/zsh-docker-compose-exec-mode/zsh-docker-compose-exec-mode.zsh ]] || source ~/.zsh/zsh-docker-compose-exec-mode/zsh-docker-compose-exec-mode.zsh
+
 # Aliases
 for f in ~/.zsh/aliases/*.zsh; do
     source "$f"
