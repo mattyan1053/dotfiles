@@ -1,3 +1,9 @@
+[".zsh/zsh-completions"]
+    type = "git-repo"
+    url = "https://github.com/zsh-users/zsh-completions.git"
+    clone.args = ["--depth", "1", "-b", "master"]
+
+
 [".zsh/zsh-autosuggestions"]
     type = "git-repo"
     url = "https://github.com/zsh-users/zsh-autosuggestions.git"
