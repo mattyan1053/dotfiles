@@ -3,6 +3,8 @@ vim.cmd [[packadd packer.nvim]]
 
 require('packer').startup(function(use)
   use 'wbthomason/packer.nvim'          -- Packer 自身
+  use 'nvim-telescope/telescope.nvim'   -- ファイル検索
+  use 'nvim-lua/plenary.nvim'           -- telescope依存ライブラリ
   use 'nvim-tree/nvim-tree.lua'         -- ファイルツリー
   use 'nvim-tree/nvim-web-devicons'     -- アイコン表示
   use 'nvim-treesitter/nvim-treesitter' -- 高速シンタックスハイライト
@@ -18,6 +20,10 @@ vim.cmd[[
   highlight BufferLineTabClose guifg=#ff5555
   highlight BufferLineFill guibg=#000000
 ]]
+
+-- リーダーキーをスペースに
+vim.g.mapleader = " "
+vim.g.maplocalleader = " "
 
 require'nvim-tree'.setup {
   view = {
@@ -56,8 +62,31 @@ require'bufferline'.setup {
   }
 }
 
--- リーダーキーをスペースに
-vim.g.mapleader = " "
+require'telescope'.setup {
+  defaults = {
+    file_ignore_patterns = {
+      "%.git/",
+      "%vendor",
+    },
+  },
+  pickers = {
+    find_files = {
+      hidden = true,
+    },
+  },
+}
+
+-- ファイル検索
+vim.api.nvim_set_keymap('n', '<Leader>ff', "<cmd>Telescope find_files<CR>", { noremap = true, silent = true })
+
+-- 文字列検索
+vim.api.nvim_set_keymap('n', '<Leader>fg', "<cmd>Telescope live_grep<CR>", { noremap = true, silent = true })
+
+-- バッファ系
+vim.api.nvim_set_keymap('n', '<Leader>fb', "<cmd>Telescope buffers<CR>", { noremap = true, silent = true })
+
+-- 検索ヘルプ
+vim.api.nvim_set_keymap('n', '<Leader>fh', "<cmd>Telescope help_tags<CR>", { noremap = true, silent = true })
 
 -- ファイルツリーのキーバインド
 vim.api.nvim_set_keymap('n', '<leader>e', ':NvimTreeToggle<CR>', { noremap = true, silent = true })
@@ -67,4 +96,4 @@ vim.api.nvim_set_keymap('n', '<S-l>', ':BufferLineCycleNext<CR>', { noremap = tr
 vim.api.nvim_set_keymap('n', '<S-h>', ':BufferLineCyclePrev<CR>', { noremap = true, silent = true })
 
 -- バッファ閉じる
-vim.api.nvim_set_keymap('n', '<leader>bc', ':bdelete<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<leader>q', ':bdelete<CR>', { noremap = true, silent = true })
