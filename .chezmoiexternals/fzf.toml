@@ -2,3 +2,9 @@
     type = "git-repo"
     url = "https://github.com/Aloxaf/fzf-tab.git"
     clone.args = ["--depth", "1", "-b", "master"]
+
+[".zsh/zsh-fzf-history-search"]
+    type = "git-repo"
+    url = "https://github.com/joshskidmore/zsh-fzf-history-search.git"
+    clone.args = ["--depth", "1", "-b", "master"]
+
