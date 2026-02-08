@@ -1,0 +1,45 @@
+name: Test Dotfiles
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  chezmoi-validate:
+    name: Validate Chezmoi
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Chezmoi
+        run: |
+          sh -c "$(curl -fsLS get.chezmoi.io)"
+          echo "$GITHUB_WORKSPACE/bin" >> $GITHUB_PATH
+
+      - name: Validate Chezmoi data
+        run: |
+          chezmoi data -S .
+
+      - name: Chezmoi dry-run
+        run: |
+          chezmoi apply --dry-run -S .
+
+  lint-templates:
+    name: Lint Template Files
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Chezmoi
+        run: |
+          sh -c "$(curl -fsLS get.chezmoi.io)"
+          echo "$GITHUB_WORKSPACE/bin" >> $GITHUB_PATH
+
+      - name: Validate template syntax
+        run: |
+          for file in $(find . -name "*.tmpl"); do
+            echo "Checking $file"
+            chezmoi execute-template < "$file" > /dev/null || exit 1
+          done
