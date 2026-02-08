@@ -22,6 +22,7 @@ ssh経由でcloneしてくる場合、`--ssh`オプションをつけること�
 - Neovim v0.11.6 以上
 - fzf v0.58.0 以上
 - bat v0.24.0 以上
+- ripgrep v14.1.1 以上
 - [MesloLGS NF Regular](https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Regular.ttf)
   - bash/zshの表示に利用しているフォントがあるため推奨
 
