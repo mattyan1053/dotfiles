@@ -1,15 +1,16 @@
--- packer 読み込み
-vim.cmd [[packadd packer.nvim]]
-
-require('packer').startup(function(use)
-  use 'wbthomason/packer.nvim'          -- Packer 自身
-  use 'nvim-telescope/telescope.nvim'   -- ファイル検索
-  use 'nvim-lua/plenary.nvim'           -- telescope依存ライブラリ
-  use 'nvim-tree/nvim-tree.lua'         -- ファイルツリー
-  use 'nvim-tree/nvim-web-devicons'     -- アイコン表示
-  use 'nvim-treesitter/nvim-treesitter' -- 高速シンタックスハイライト
-  use 'akinsho/bufferline.nvim'         -- タブ表示
-end)
+-- lazy.nvim bootstrap
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not vim.loop.fs_stat(lazypath) then
+  vim.fn.system({
+    "git",
+    "clone",
+    "--filter=blob:none",
+    "https://github.com/folke/lazy.nvim.git",
+    "--branch=stable",
+    lazypath,
+  })
+end
+vim.opt.rtp:prepend(lazypath)
 
 vim.o.termguicolors = true
 vim.cmd('source ~/.vimrc')
@@ -25,75 +26,115 @@ vim.cmd[[
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
-require'nvim-tree'.setup {
-  view = {
-    side = 'left',
-    width = 30,
-    adaptive_size = true,
+require("lazy").setup({
+  {
+    "nvim-lua/plenary.nvim",
+    lazy = true,
   },
-  actions = {
-    open_file = {
-      quit_on_open = false,
-    },
+  {
+    "nvim-tree/nvim-web-devicons",
+    lazy = true,
   },
-}
-require'bufferline'.setup {
-  options = {
-    offsets = {
-      {
-        filetype = "NvimTree",
-	text = "Explorer",
-	highlight = "Directory",
-	text_align = "left"
-      }
+  {
+    "nvim-telescope/telescope.nvim",
+    cmd = "Telescope",
+    keys = {
+      { "<Leader>ff", "<cmd>Telescope find_files<CR>" },
+      { "<Leader>fg", "<cmd>Telescope live_grep<CR>" },
+      { "<Leader>fb", "<cmd>Telescope buffers<CR>" },
+      { "<Leader>fh", "<cmd>Telescope help_tags<CR>" },
     },
-    numbers = "none",
-    close_command = "bdelete! %d",      -- バッファを閉じる
-    right_mouse_command = "bdelete! %d",
-    left_mouse_command = "buffer %d", -- クリックで切り替え
-    middle_mouse_command = nil,
-    show_buffer_icons = true,
-    show_buffer_close_icons = true,
-    show_close_icon = false,
-    separator_style = "slant",
-    always_show_bufferline = true,
-    enforce_regular_tabs = false,
-    view = 'multiwindow',
-  }
-}
-
-require'telescope'.setup {
-  defaults = {
-    file_ignore_patterns = {
-      "%.git/",
-      "%vendor",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
     },
+    config = function()
+      require("telescope").setup({
+        defaults = {
+          file_ignore_patterns = {
+            "%.git/",
+            "%vendor",
+          },
+        },
+        pickers = {
+          find_files = {
+            hidden = true,
+          },
+        },
+      })
+    end,
   },
-  pickers = {
-    find_files = {
-      hidden = true,
+  {
+    "nvim-tree/nvim-tree.lua",
+    cmd = {
+      "NvimTreeToggle",
+      "NvimTreeOpen",
+      "NvimTreeFindFile",
     },
+    keys = {
+      { "<leader>e", "<cmd>NvimTreeToggle<CR>" },
+    },
+    dependencies = {
+      "nvim-tree/nvim-web-devicons",
+    },
+    config = function()
+      require("nvim-tree").setup({
+        view = {
+          side = "left",
+          width = 30,
+          adaptive_size = true,
+        },
+        actions = {
+          open_file = {
+            quit_on_open = false,
+          },
+        },
+      })
+    end,
   },
-}
+  {
+    "nvim-treesitter/nvim-treesitter",
+    event = { "BufReadPost", "BufNewFile" },
+    build = ":TSUpdate",
+  },
+  {
+    "akinsho/bufferline.nvim",
+    event = "VeryLazy",
+    cmd = {
+      "BufferLineCycleNext",
+      "BufferLineCyclePrev",
+    },
+    dependencies = {
+      "nvim-tree/nvim-web-devicons",
+    },
+    config = function()
+      require("bufferline").setup({
+        options = {
+          offsets = {
+            {
+              filetype = "NvimTree",
+              text = "Explorer",
+              highlight = "Directory",
+              text_align = "left",
+            },
+          },
+          numbers = "none",
+          close_command = "bdelete! %d",
+          right_mouse_command = "bdelete! %d",
+          left_mouse_command = "buffer %d",
+          middle_mouse_command = nil,
+          show_buffer_icons = true,
+          show_buffer_close_icons = true,
+          show_close_icon = false,
+          separator_style = "slant",
+          always_show_bufferline = true,
+          enforce_regular_tabs = false,
+          view = "multiwindow",
+        },
+      })
+    end,
+  },
+})
 
--- ファイル検索
-vim.api.nvim_set_keymap('n', '<Leader>ff', "<cmd>Telescope find_files<CR>", { noremap = true, silent = true })
-
--- 文字列検索
-vim.api.nvim_set_keymap('n', '<Leader>fg', "<cmd>Telescope live_grep<CR>", { noremap = true, silent = true })
-
--- バッファ系
-vim.api.nvim_set_keymap('n', '<Leader>fb', "<cmd>Telescope buffers<CR>", { noremap = true, silent = true })
-
--- 検索ヘルプ
-vim.api.nvim_set_keymap('n', '<Leader>fh', "<cmd>Telescope help_tags<CR>", { noremap = true, silent = true })
-
--- ファイルツリーのキーバインド
-vim.api.nvim_set_keymap('n', '<leader>e', ':NvimTreeToggle<CR>', { noremap = true, silent = true })
-
--- バッファ移動
-vim.api.nvim_set_keymap('n', '<S-l>', ':BufferLineCycleNext<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<S-h>', ':BufferLineCyclePrev<CR>', { noremap = true, silent = true })
-
--- バッファ閉じる
-vim.api.nvim_set_keymap('n', '<leader>q', ':bdelete<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap("n", "<leader>q", ":bdelete<CR>", { noremap = true, silent = true })
+vim.api.nvim_set_keymap("n", "<S-l>", ":BufferLineCycleNext<CR>", { noremap = true, silent = true })
+vim.api.nvim_set_keymap("n", "<S-h>", ":BufferLineCyclePrev<CR>", { noremap = true, silent = true })
