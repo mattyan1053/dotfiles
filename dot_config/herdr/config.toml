@@ -1,0 +1,68 @@
+# ~/.config/herdr/config.toml
+# tmux (dot_tmux.conf) からの移行設定。
+# できるだけ tmux と同じ操作感になるようキーバインドを対応付けている。
+#
+# tmux → herdr の主な対応:
+#   prefix C-a                 -> keys.prefix = "ctrl+a"
+#   bind h/j/k/l select-pane   -> focus_pane_left/down/up/right (herdr デフォルトと同じ)
+#   bind | split-window -h     -> split_vertical   (左右に並ぶ分割)
+#   bind - split-window -v     -> split_horizontal (上下に積む分割 / デフォルトと同じ)
+#   bind -n C-z resize-pane -Z -> zoom = "ctrl+z"
+#   bind -n S-left/S-right     -> previous_tab / next_tab (window = herdr の tab)
+#   bind -r H/J/K/L resize     -> resize_mode = "prefix+r" (方式が異なる。下部の注記参照)
+#   set -g mouse off           -> ui.mouse_capture = false
+
+[keys]
+# プレフィックスキー (tmux: set-option -g prefix C-a)
+prefix = "ctrl+a"
+
+# ── ペイン間移動 (tmux: bind h/j/k/l select-pane -L/-D/-U/-R) ──
+# herdr のデフォルトと同一だが、移行元との対応を明示するため記載。
+focus_pane_left  = "prefix+h"
+focus_pane_down  = "prefix+j"
+focus_pane_up    = "prefix+k"
+focus_pane_right = "prefix+l"
+
+# ── ペイン分割 ──
+# tmux の "|" は左右分割(split-window -h) = herdr では split_vertical。
+# tmux の "-" は上下分割(split-window -v) = herdr では split_horizontal。
+# tmux キー("|","-")を主に、herdr デフォルト("v","-")も配列で残す。
+split_vertical   = ["prefix+|", "prefix+v"]
+split_horizontal = "prefix+minus"
+
+# ── ペイン最大化/ズーム (tmux: bind -n C-z resize-pane -Z) ──
+# tmux ではプレフィックス無しの Ctrl+z。herdr でも直接 Ctrl+z に割り当て、
+# プレフィックス版(prefix+z, herdr デフォルト)も併用可能にしておく。
+zoom = ["ctrl+z", "prefix+z"]
+
+# ── ウィンドウ(= herdr のタブ)切り替え (tmux: bind -n S-left / S-right) ──
+# tmux ではプレフィックス無しの Shift+←/→。herdr デフォルト(prefix+p/n)も併用。
+previous_tab = ["shift+left",  "prefix+p"]
+next_tab     = ["shift+right", "prefix+n"]
+
+# ── ペインのリサイズ ──
+# tmux: bind -r H/J/K/L resize-pane -L/-D/-U/-R 5 (プレフィックス後に連打で調整)。
+# herdr は「リサイズモード」方式: prefix+r で入り、h/j/k/l または矢印で調整、Esc で抜ける。
+# キー単位の直接リサイズは無いため、ここは herdr 流に resize_mode を割り当てる。
+resize_mode = "prefix+r"
+
+[ui]
+# tmux: set -g mouse off に相当。マウスキャプチャを無効化。
+# 注: tmux の "bind m/M" のようなマウスON/OFFの実行時トグルは herdr には無い。
+#     切り替えたい場合はこの値を変更して `herdr server reload-config` で反映する。
+mouse_capture = false
+
+# ── 見た目 ──
+# tmux では現在ウィンドウを緑(colour2)、アクティブペイン枠を青(colour39)にしていた。
+# herdr はステータス/サイドバー構成が tmux と異なるため完全一致はしないが、
+# アクセント色を緑系にして「現在=緑」の雰囲気を寄せる。
+[theme]
+name = "catppuccin"
+
+[theme.custom]
+# 現在タブ/アクティブ要素のハイライト。tmux の緑(colour2 ≒ #008000)に合わせる。
+accent = "#008000"
+green  = "#008000"
+# tmux のアクティブペイン枠 colour39(≒ #00afff)の名残。
+# 注: herdr にはペイン枠専用の色設定は無く、これは青系アクセント全般に効く。
+blue   = "#00afff"
