@@ -10,7 +10,7 @@
 #   bind -n C-z resize-pane -Z -> zoom = "ctrl+z"
 #   bind -n S-left/S-right     -> previous_tab / next_tab (window = herdr の tab)
 #   bind -r H/J/K/L resize     -> resize_mode = "prefix+r" (方式が異なる。下部の注記参照)
-#   set -g mouse off           -> ui.mouse_capture = false
+# 注: tmux の "set -g mouse off" は移植しない。herdr のマウス機能を活かすためデフォルト(有効)のまま。
 
 [keys]
 # プレフィックスキー (tmux: set-option -g prefix C-a)
@@ -46,11 +46,10 @@ next_tab     = ["shift+right", "prefix+n"]
 # キー単位の直接リサイズは無いため、ここは herdr 流に resize_mode を割り当てる。
 resize_mode = "prefix+r"
 
-[ui]
-# tmux: set -g mouse off に相当。マウスキャプチャを無効化。
-# 注: tmux の "bind m/M" のようなマウスON/OFFの実行時トグルは herdr には無い。
-#     切り替えたい場合はこの値を変更して `herdr server reload-config` で反映する。
-mouse_capture = false
+# ── マウス ──
+# tmux では "set -g mouse off" にしていたが、herdr はマウス操作が目玉機能のため
+# デフォルト(ui.mouse_capture = true)のまま有効にしておく。
+# 無効化したくなったら [ui] セクションを足して mouse_capture = false を設定する。
 
 # ── 見た目 ──
 # tmux では現在ウィンドウを緑(colour2)、アクティブペイン枠を青(colour39)にしていた。
