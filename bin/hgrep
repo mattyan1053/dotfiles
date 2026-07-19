@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+# hgrep — プロジェクト全体の「内容検索」を対話的に行う herdr popup 用スクリプト(VSCode の検索 相当)。
+#
+#   rg でファイル内容を横断検索 → fzf でライブ絞り込み(打鍵ごとに再検索)→ bat でプレビュー →
+#   Enter で該当行を $EDITOR(既定 nvim)で開く。
+#
+# file-viewer の f(ファイル名 fuzzy-find ≒ Ctrl+P)とは別レイヤで、こちらは「中身の grep」。
+# 既存 zsh 関数 rgf(dot_zsh/functions/rgf)を「対話 + エディタ起動」に発展させたもの。
+# プレビューの見せ方は rgf と揃えてある。
+#
+# 置き場所: chezmoi ソースの bin/。.chezmoiignore 対象だが $HOME/.local/share/chezmoi/bin が
+# PATH に入っている(dot_zshrc.tmpl / dot_bashrc.tmpl)ため、apply 不要でそのまま実行できる。
+# lazygit(bin/lazygit)を herdr popup から呼べているのと同じ仕組み。
+#
+# herdr 側の割り当ては dot_config/herdr/config.toml の [[keys.command]](type = "popup")。
+set -u
+
+# 依存チェック(popup 内で黙って失敗しないよう、無ければ理由を出して止める)。
+for cmd in rg fzf bat; do
+  command -v "$cmd" >/dev/null 2>&1 || { printf 'hgrep: %s が見つかりません(PATH を確認)。\n' "$cmd" >&2; sleep 2; exit 1; }
+done
+
+# 起動時引数があれば初期クエリに(無くても対話的に打てる)。
+INITIAL_QUERY="${*:-}"
+
+# rg: スマートケース、シンボリックリンク追従、色付き、--no-heading で "file:line:text"。
+RG='rg --line-number --no-heading --color=always --smart-case --follow'
+
+# プレビュー: 該当行を中心に前後を bat で表示しハイライト。fzf は preview/reload を sh で
+# 実行するので POSIX 算術(( )ではなく $(( ))・[ ])で書く。
+PREVIEW='
+  file={1}; line={2};
+  lines=${FZF_PREVIEW_LINES:-40};
+  half=$(( lines / 2 ));
+  start=$(( line - half )); [ "$start" -lt 1 ] && start=1;
+  end=$(( start + lines - 1 ));
+  bat --style=numbers --color=always --line-range ${start}:${end} --highlight-line ${line} "$file"
+'
+
+# 空クエリのときは何も出さない(打鍵で reload される)。初期クエリがあれば最初から検索。
+if [ -n "$INITIAL_QUERY" ]; then
+  export FZF_DEFAULT_COMMAND="$RG -- $(printf '%q' "$INITIAL_QUERY")"
+else
+  export FZF_DEFAULT_COMMAND=":"
+fi
+
+selection=$(
+  fzf --ansi \
+      --disabled \
+      --query "$INITIAL_QUERY" \
+      --bind "change:reload:[ -n {q} ] && $RG -- {q} || :" \
+      --delimiter : \
+      --preview "$PREVIEW" \
+      --preview-window 'right,60%' \
+      --prompt 'search> ' \
+      --header 'type to search file contents · Enter: open in editor · Esc: cancel'
+) || exit 0
+
+[ -z "$selection" ] && exit 0
+
+# "file:line:text" を分解。
+file=${selection%%:*}
+rest=${selection#*:}
+line=${rest%%:*}
+
+: "${EDITOR:=nvim}"
+exec "$EDITOR" +"${line:-1}" "$file"

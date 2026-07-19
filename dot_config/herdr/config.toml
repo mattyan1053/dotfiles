@@ -16,6 +16,7 @@
 #   - 通知 : エージェントがブロック/完了したら herdr 内トースト + サウンド
 #   - エージェント運用: 状態順サイドバー・エージェント間移動キー・ペイン枠にラベル表示
 #   - git worktree キー / lazygit ポップアップ
+#   - VSCode 代替: file-viewer(ツリー+差分+MDプレビュー / prefix+alt+f)、全体 grep(rg+fzf→エディタ / prefix+alt+s)
 #
 # 【修飾子の法則(herdr の既定思想に合わせる)】
 #   無印 (prefix+<key>)      = タブ / ペインの日常操作(移動・分割・ズーム・リサイズ)
@@ -135,6 +136,44 @@ command = "lazygit"
 description = "lazygit"
 width = "80%"
 height = "80%"
+
+# ── VSCode 代替 ①: ファイルビューア(herdr-file-viewer プラグイン)──
+# VSCode の「サイドバー(エクスプローラ)+ 差分ビュー + MDプレビュー」を herdr の split ペインで代替。
+# git 対応ツリー(M/A/D マーカー・変更のみフィルタ・merge-base⇄HEAD の基準切替)を左に、
+# 右ペインは "変更なら diff / md なら整形 / それ以外はシンタックスハイライト" と自動で最適表示。
+# 読み取り専用でファイルは一切書き換えず、エージェントの worktree を安全に覗ける。
+#   ビューア内: f=ファイル名 fuzzy-find(≒Ctrl+P) / v=表示切替 / b=diff基準切替 /
+#              L=path:line コピー / W=worktree切替 / e=エディタで開く / Z=全画面 / ?=ヘルプ
+# キーは Alt 体系(カスタムコマンド。lazygit=alt+g と同系列)。split を主に、タブ版は下にコメント併記。
+# command は "<plugin_id>.<action_id>"(compose.toggle と同じ書式)。プラグイン本体の導入は
+# run_onchange_install-herdr-plugins.sh 参照。表示は delta(diff・EPEL の git-delta)と bat(コード)で
+# 整形、glow 未導入のため Markdown のみ素テキスト表示(レンダラの導入手順も同スクリプトのコメント参照)。
+[[keys.command]]
+key = "prefix+alt+f"
+type = "plugin_action"
+command = "herdr-file-viewer.open-file-viewer"
+description = "file viewer (split)"
+# 独立タブで開きたいときは以下を有効化(alt+shift+f):
+# [[keys.command]]
+# key = "prefix+alt+shift+f"
+# type = "plugin_action"
+# command = "herdr-file-viewer.open-file-viewer-tab"
+# description = "file viewer (tab)"
+
+# ── VSCode 代替 ②: プロジェクト全体 grep / 内容検索 ──
+# VSCode の「検索(Ctrl+Shift+F)」相当。rg で内容を横断検索 → fzf でライブ絞り込み →
+# bat でプレビュー → Enter で該当行を $EDITOR(既定 nvim)で開く。
+# 上の file-viewer の f(ファイル "名" 検索)とは別レイヤの「中身の検索」。
+# 実体は bin/hgrep($HOME/.local/share/chezmoi/bin が PATH 上にあるので apply 不要で動く。
+# lazygit と同じ仕組み)。既存 shell 関数 rgf の対話・エディタ起動版。
+# キーは s=search。slash は herdr のキー名として確証が無いため letter キーを採用。
+[[keys.command]]
+key = "prefix+alt+s"
+type = "popup"
+command = "hgrep"
+description = "grep (rg live search → open in editor)"
+width = "90%"
+height = "90%"
 
 # ── マウス / UI ──
 # tmux では "set -g mouse off" にしていたが、herdr はマウス操作が目玉機能のため
