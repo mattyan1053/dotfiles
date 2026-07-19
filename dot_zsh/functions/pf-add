@@ -1,0 +1,38 @@
+# pf-add: 接続元(ローカル)から、稼働中の SSH 接続に後付けでポートフォワードを足す。
+#
+# 【役割】VSCode の「ポート転送を追加」に相当する操作を、手動ポート指定のまま提供する。
+#   ポートフォワードは接続元(このマシン)の SSH クライアントが張るものなので、
+#   herdr が動く VM 側ではなくローカル側の責務。よって darwin(Mac)にのみ配置する
+#   (.chezmoiignore で linux からは除外)。
+#
+# 【仕組み】SSH の接続多重化(ControlMaster)+ `ssh -O forward`。
+#   一度張った master 接続に対して、再認証も再接続もなしにフォワードを足せる。
+#   踏み台(ProxyJump)も master が一度通れば透過する。master が無ければこの関数が張る。
+#   ProxyJump 等の接続情報は ~/.ssh/config の Host エイリアスをそのまま再利用する
+#   (実ホスト名はリポジトリに残さない)。ホストは毎回引数で指定する。
+#
+# 【使い方】
+#   pf-add devvm 28000        # localhost:28000 -> devvm:28000
+#   pf-add devvm 8080 80      # localhost:8080  -> devvm:80   (ローカル:リモートが別ポート)
+pf-add() {
+  emulate -L zsh
+  local host="$1" lport="$2" rport="${3:-$2}"
+  if [[ -z "$host" || -z "$lport" ]]; then
+    echo "usage: pf-add <host> <local_port> [remote_port]" >&2
+    return 1
+  fi
+
+  local cp="$HOME/.ssh/cm/%r@%h:%p"
+  mkdir -p "$HOME/.ssh/cm"
+
+  # master 接続を保証する(既にあれば再利用)。ControlPersist で少し生かしておく。
+  if ! ssh -o ControlPath="$cp" -O check "$host" 2>/dev/null; then
+    ssh -o ControlMaster=auto -o ControlPath="$cp" -o ControlPersist=10m -fN "$host" || return 1
+  fi
+
+  if ssh -o ControlPath="$cp" -O forward -L "${lport}:localhost:${rport}" "$host"; then
+    echo "forwarded  localhost:${lport} -> ${host}:${rport}"
+  else
+    return 1
+  fi
+}

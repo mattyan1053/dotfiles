@@ -1,0 +1,18 @@
+# pf-ls: 現在張られているポートフォワード(ローカルで LISTEN 中の ssh)を一覧する。
+#   `ssh -O forward` 自体には一覧機能が無いため、ローカルの LISTEN ソケットから拾う。
+#
+# 【使い方】
+#   pf-ls              # ssh が握っている LISTEN ポートを表示
+#   pf-ls devvm        # あわせて devvm への master 接続の生存も確認(ssh -O check)
+pf-ls() {
+  emulate -L zsh
+  echo "== local forwards (ssh LISTEN sockets) =="
+  # -sTCP:LISTEN で待ち受けのみ。-c ssh で ssh プロセスに限定。
+  lsof -nP -iTCP -sTCP:LISTEN -a -c ssh 2>/dev/null || echo "(none)"
+
+  if [[ -n "$1" ]]; then
+    local cp="$HOME/.ssh/cm/%r@%h:%p"
+    echo "== master ($1) =="
+    ssh -o ControlPath="$cp" -O check "$1" 2>&1
+  fi
+}

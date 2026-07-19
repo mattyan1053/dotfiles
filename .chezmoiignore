@@ -1,8 +1,20 @@
 README.md
+PORT-FORWARDING.md
 bin/
 
 .bashrc.local
 .zshrc.local
+
+# ── ポートフォワード補助(接続元でのみ使う)を OS で出し分ける ──
+# pf-add/pf-rm/pf-ls は「接続元(手元の Mac)」で動かすもの。
+# herdr が動く VM(linux)には配置しない。
+{{ if ne .chezmoi.os "darwin" }}
+# Mac 以外(= VM の linux)には入れない
+.zsh/functions/pf-add
+.zsh/functions/pf-rm
+.zsh/functions/pf-ls
+.zsh/completions/_pf
+{{ end }}
 
 *.txt   # ignore *.txt in the target directory
 */*.txt # ignore *.txt in subdirectories of the target directory
