@@ -117,6 +117,7 @@ open_worktree = "prefix+shift+o"
 key = "prefix+shift+d"
 type = "plugin_action"
 command = "compose.toggle"
+description = "compose: toggle (start/stop)"
 
 # ── カスタムコマンド: lazygit をモーダルポップアップ起動 ──
 # lazygit は herdr のオブジェクト(pane/tab/space/agent)ではない独自コマンドなので、
