@@ -100,13 +100,14 @@ next_agent     = "prefix+alt+j"
 focus_agent    = "prefix+alt+1..9"
 
 # ── git worktree(= Shift: 管理系。herdr ネイティブ) ──
-# new_worktree は herdr デフォルト(prefix+shift+g)。open も Shift で揃える。
-# remove は未割り当て:
-#   - herdr も既定では remove_worktree を割り当てていない。
-#   - "prefix+shift+backspace" は多くの端末が Shift+Backspace で Shift を送らず不発。
-#   削除は open で開くピッカーや `herdr worktree remove` から。専用キーが欲しければ相談。
-new_worktree  = "prefix+shift+g"
-open_worktree = "prefix+shift+o"
+# new_worktree は herdr デフォルト(prefix+shift+g)。open / remove も Shift で揃える。
+# remove は e(erase)。herdr 既定は未割り当てで、"prefix+shift+backspace" は多くの
+# 端末が Shift+Backspace で Shift を送らず不発のため文字キーにした。確認ダイアログ経由。
+# 注: workspace を閉じる(shift+d)は checkout を残す。checkout ごと消すのがこの remove で、
+#     herdr-compose の worktree.removed フックが compose スタックも自動で down する。
+new_worktree    = "prefix+shift+g"
+open_worktree   = "prefix+shift+o"
+remove_worktree = "prefix+shift+e"
 
 # ── herdr-compose プラグイン(= Shift: space 対象の操作) ──
 # 各 space の docker compose スタックを起動/停止(github.com/mattyan1053/herdr-compose)。
