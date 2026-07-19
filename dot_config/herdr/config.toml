@@ -132,6 +132,7 @@ description = "compose: toggle (start/stop)"
 key = "prefix+alt+g"
 type = "popup"
 command = "lazygit"
+description = "lazygit"
 width = "80%"
 height = "80%"
 
