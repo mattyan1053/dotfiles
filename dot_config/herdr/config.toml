@@ -111,19 +111,35 @@ new_worktree    = "prefix+shift+g"
 open_worktree   = "prefix+shift+o"
 remove_worktree = "prefix+shift+e"
 
-# ── herdr-compose プラグイン(= Shift: space 対象の操作) ──
-# 各 space の docker compose スタックを起動/停止(github.com/mattyan1053/herdr-compose)。
-# toggle: 起動中なら stop(メモリ解放・状態保持)、停止中なら start、コンテナ無しなら up -d。
-# down / up / refresh / gc は `herdr plugin action invoke compose.<action>` から
-# (誤爆しやすい down に専用キーは付けない)。
-# キーは s(start/stop)。shift+d は herdr デフォルトの close_workspace なので使わない
-# (herdr はカスタムがデフォルトを黙って上書きし、config check も警告しない)。
-# プラグイン本体は run_onchange_install-herdr-plugins.sh がインストールする。
+# ── herdr-compose プラグイン(github.com/mattyan1053/herdr-compose) ──
+# 各 space の docker compose スタックを操作。キーは修飾子の法則に従い2系統に分ける
+# (CI status の shift+c / alt+c と同じ考え方):
+#   - toggle = space の状態を変える操作(start/stop の切替) → Shift。
+#   - ps popup = 補助ツール(インタラクティブなペイン)を開く操作 → Alt
+#     (lazygit=alt+g / file-viewer=alt+f / hgrep=alt+s / CI詳細=alt+c と同系統)。
+#
+# toggle(prefix+shift+s): 起動中なら stop(メモリ解放・状態保持)、停止中なら start、
+# コンテナ無しなら up -d。s(start/stop)。shift+d は herdr デフォルトの close_workspace
+# なので使わない(herdr はカスタムがデフォルトを黙って上書きし、config check も警告しない)。
 [[keys.command]]
 key = "prefix+shift+s"
 type = "plugin_action"
 command = "compose.toggle"
 description = "compose: toggle (start/stop)"
+
+# ps popup(prefix+alt+p): `docker compose ps` のインタラクティブなピッカー popup。
+# 選択したサービスに対して logs / restart / start / stop / up / down をその場で実行できる、
+# compose スタックの操作ハブ。個別キーを持たない down / up / refresh 系もここから安全に叩ける
+# (「誤爆しやすい down に専用キーは付けない」方針のまま、確認しながら操作できる導線)。
+# p=ps。実体は plugin の [[panes]] popup(herdr plugin pane open)を open-ps.sh が起動する。
+# 前提: compose プラグイン 0.2.0 以降(ps アクション追加版)。0.1.0 のままだと unknown action に
+# なる。プラグインは手動更新の運用(`herdr plugin install mattyan1053/herdr-compose --yes` で
+# 最新を取り直す)。install スクリプトは install-if-absent のため自動更新はしない。
+[[keys.command]]
+key = "prefix+alt+p"
+type = "plugin_action"
+command = "compose.ps"
+description = "compose: ps popup (logs/restart/start/stop/up/down)"
 
 # ── カスタムコマンド: lazygit をモーダルポップアップ起動 ──
 # lazygit は herdr のオブジェクト(pane/tab/space/agent)ではない独自コマンドなので、
