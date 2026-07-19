@@ -132,6 +132,9 @@ description = "compose: toggle (start/stop)"
 # compose スタックの操作ハブ。個別キーを持たない down / up / refresh 系もここから安全に叩ける
 # (「誤爆しやすい down に専用キーは付けない」方針のまま、確認しながら操作できる導線)。
 # p=ps。実体は plugin の [[panes]] popup(herdr plugin pane open)を open-ps.sh が起動する。
+# 前提: compose プラグイン 0.2.0 以降(ps アクション追加版)。0.1.0 のままだと unknown action に
+# なる。プラグインは手動更新の運用(`herdr plugin install mattyan1053/herdr-compose --yes` で
+# 最新を取り直す)。install スクリプトは install-if-absent のため自動更新はしない。
 [[keys.command]]
 key = "prefix+alt+p"
 type = "plugin_action"
