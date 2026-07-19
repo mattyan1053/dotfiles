@@ -1,16 +1,42 @@
 # ~/.config/herdr/config.toml
-# tmux (dot_tmux.conf) からの移行設定。
-# できるだけ tmux と同じ操作感になるようキーバインドを対応付けている。
+# tmux (dot_tmux.conf) からの移行設定 + herdr 本来の機能を活かすカスタマイズ。
 #
-# tmux → herdr の主な対応:
+# 【tmux → herdr のキー対応】
 #   prefix C-a                 -> keys.prefix = "ctrl+a"
 #   bind h/j/k/l select-pane   -> focus_pane_left/down/up/right (herdr デフォルトと同じ)
 #   bind | split-window -h     -> split_vertical   (左右に並ぶ分割)
 #   bind - split-window -v     -> split_horizontal (上下に積む分割 / デフォルトと同じ)
-#   bind -n C-z resize-pane -Z -> zoom = "ctrl+z"
-#   bind -n S-left/S-right     -> previous_tab / next_tab (window = herdr の tab)
+#   bind -n C-z resize-pane -Z -> zoom = "prefix+z" (Ctrl 不使用方針のため prefix 版に)
+#   bind -n S-left/S-right     -> previous_tab / next_tab (prefix+p/n。Shift+矢印は廃止)
 #   bind -r H/J/K/L resize     -> resize_mode = "prefix+r" (方式が異なる。下部の注記参照)
 # 注: tmux の "set -g mouse off" は移植しない。herdr のマウス機能を活かすためデフォルト(有効)のまま。
+#
+# 【herdr らしい追加設定(tmux には無い機能)】
+#   - テーマ: tokyo-night
+#   - 通知 : エージェントがブロック/完了したら herdr 内トースト + サウンド
+#   - エージェント運用: 状態順サイドバー・エージェント間移動キー・ペイン枠にラベル表示
+#   - git worktree キー / lazygit ポップアップ
+#
+# 【修飾子の法則(herdr の既定思想に合わせる)】
+#   無印 (prefix+<key>)      = タブ / ペインの日常操作(移動・分割・ズーム・リサイズ)
+#   Shift (prefix+shift+<k>) = space(ワークスペース)の切替 + 管理系(new/rename/close, worktree)
+#   Alt   (prefix+alt+<k>)   = エージェント(agent)の切替・フォーカス
+#   ※ Ctrl は修飾子として使わない(prefix 自体の ctrl+a のみ)。
+#   ※ 番号ジャンプは 無印=タブ / Shift=space / Alt=agent で 1..9 を三分割:
+#        switch_tab=prefix+1..9  switch_workspace=prefix+shift+1..9  focus_agent=prefix+alt+1..9
+#   ※ 前後移動は j/k(サイドバーの縦リスト): space=shift+k/j, agent=alt+k/j(k=前, j=次)。
+#
+# 反映方法: `herdr server reload-config`(または prefix+shift+r)。設定検証は `herdr config check`。
+
+# ── 見た目 ──
+# tmux では現在ウィンドウを緑にしていたが、herdr ではテーマ本来の配色を活かすため
+# tokyo-night をそのまま使う(カスタム色の上書きはしない)。
+[theme]
+name = "tokyo-night"
+# 端末のライト/ダークに追従させたくなったら以下を有効化:
+# auto_switch = true
+# dark_name  = "tokyo-night"
+# light_name = "tokyo-night-day"
 
 [keys]
 # プレフィックスキー (tmux: set-option -g prefix C-a)
@@ -30,15 +56,35 @@ focus_pane_right = "prefix+l"
 split_vertical   = ["prefix+|", "prefix+v"]
 split_horizontal = "prefix+minus"
 
-# ── ペイン最大化/ズーム (tmux: bind -n C-z resize-pane -Z) ──
-# tmux ではプレフィックス無しの Ctrl+z。herdr でも直接 Ctrl+z に割り当て、
-# プレフィックス版(prefix+z, herdr デフォルト)も併用可能にしておく。
-zoom = ["ctrl+z", "prefix+z"]
+# ── ペインの入れ替え(swap_pane) ──
+# herdr 既定は prefix+shift+h/j/k/l だが、そこは space 切替(Shift 体系)に使いたい。
+# 衝突を根絶するため swap_pane を明示的に Shift+矢印へ退避(「ペインを方向に押し出す」)。
+# ※ これを書かないと既定の shift+h/j/k/l が残り、space 切替と衝突する(Codex 指摘)。
+swap_pane_left  = "prefix+shift+left"
+swap_pane_down  = "prefix+shift+down"
+swap_pane_up    = "prefix+shift+up"
+swap_pane_right = "prefix+shift+right"
 
-# ── ウィンドウ(= herdr のタブ)切り替え (tmux: bind -n S-left / S-right) ──
-# tmux ではプレフィックス無しの Shift+←/→。herdr デフォルト(prefix+p/n)も併用。
-previous_tab = ["shift+left",  "prefix+p"]
-next_tab     = ["shift+right", "prefix+n"]
+# ── ペイン最大化/ズーム (tmux: bind -n C-z resize-pane -Z) ──
+# Ctrl は修飾子として使わない方針にしたので、prefix+z のみ(herdr デフォルト)。
+# 直接 Ctrl+z を外したことで、シェルのサスペンド(fg/bg)が使えるようになる。
+zoom = "prefix+z"
+
+# ── タブ切り替え(= 無印: タブ/ペインの日常操作) ──
+# herdr デフォルトの prefix+p/n。tmux の Shift+←/→ 併用は、Shift を space 用に
+# 統一するため廃止(番号ジャンプ prefix+1..9 も併用可)。
+previous_tab = "prefix+p"
+next_tab     = "prefix+n"
+
+# ── space(ワークスペース)の切り替え(= Shift) ──
+# herdr の既定思想では space/管理系は Shift。前後は縦リストの k=前 / j=次。
+# 番号ジャンプ(switch_workspace)は herdr 公式例どおり prefix+shift+1..9。
+# ピッカー(prefix+w, herdr デフォルト)も併用可。
+# 注: shift+h/j/k/l は既定で swap_pane に割り当てられているため、上の [swap_pane_*]
+#     で Shift+矢印へ退避済み。これにより shift+k/j を衝突なく space 切替に使える。
+previous_workspace = "prefix+shift+k"
+next_workspace     = "prefix+shift+j"
+switch_workspace   = "prefix+shift+1..9"
 
 # ── ペインのリサイズ ──
 # tmux: bind -r H/J/K/L resize-pane -L/-D/-U/-R 5 (プレフィックス後に連打で調整)。
@@ -46,22 +92,63 @@ next_tab     = ["shift+right", "prefix+n"]
 # キー単位の直接リサイズは無いため、ここは herdr 流に resize_mode を割り当てる。
 resize_mode = "prefix+r"
 
-# ── マウス ──
+# ── エージェント(agent)の切り替え(= Alt) ──
+# herdr の既定思想では agent は Alt(focus_agent の公式例が prefix+alt+1..9)。
+# 前後は縦リストの k=前 / j=次、番号ジャンプは prefix+alt+1..9。
+previous_agent = "prefix+alt+k"
+next_agent     = "prefix+alt+j"
+focus_agent    = "prefix+alt+1..9"
+
+# ── git worktree(= Shift: 管理系。herdr ネイティブ) ──
+# new_worktree は herdr デフォルト(prefix+shift+g)。open も Shift で揃える。
+# remove は未割り当て:
+#   - herdr も既定では remove_worktree を割り当てていない。
+#   - "prefix+shift+backspace" は多くの端末が Shift+Backspace で Shift を送らず不発。
+#   削除は open で開くピッカーや `herdr worktree remove` から。専用キーが欲しければ相談。
+new_worktree  = "prefix+shift+g"
+open_worktree = "prefix+shift+o"
+
+# ── カスタムコマンド: lazygit をモーダルポップアップ起動 ──
+# lazygit は herdr のオブジェクト(pane/tab/space/agent)ではない独自コマンドなので、
+# herdr 公式のカスタムコマンド例と同じ prefix+alt+g に割り当てる。
+# (worktree の新規=prefix+shift+g とは別キー。alt+g と alt+1..9 は衝突しない)
+# レイアウトを崩さずに git 操作。終了するとポップアップは閉じる。※ lazygit のインストールが前提。
+[[keys.command]]
+key = "prefix+alt+g"
+type = "popup"
+command = "lazygit"
+width = "80%"
+height = "80%"
+
+# ── マウス / UI ──
 # tmux では "set -g mouse off" にしていたが、herdr はマウス操作が目玉機能のため
-# デフォルト(ui.mouse_capture = true)のまま有効にしておく。
-# 無効化したくなったら [ui] セクションを足して mouse_capture = false を設定する。
+# mouse_capture はデフォルト(true)のまま。無効化したければ mouse_capture = false。
+[ui]
+# エージェントパネルを space(ワークスペース)ごとの group 順で並べる(herdr デフォルト)。
+# 状態は行頭アイコンで分かるので、並びは要対応順(priority)より group 順が把握しやすい。
+agent_panel_sort = "spaces"
+# 分割ペインの枠に、検出したエージェント名を表示(手動ペイン名が無いとき)。
+show_agent_labels_on_pane_borders = true
+# タブ作成時に名前入力を求めず即作成(生成名でサッと開く)。
+prompt_new_tab_name = false
+# タブが1つのときはタブ行を隠してスッキリ。新規タブは prefix+c で作れる。
+hide_tab_bar_when_single_tab = true
 
-# ── 見た目 ──
-# tmux では現在ウィンドウを緑(colour2)、アクティブペイン枠を青(colour39)にしていた。
-# herdr はステータス/サイドバー構成が tmux と異なるため完全一致はしないが、
-# アクセント色を緑系にして「現在=緑」の雰囲気を寄せる。
-[theme]
-name = "catppuccin"
+# ── 通知(エージェントがブロック/完了したときの通知) ──
+# 使い方: 手元(Windows Terminal / iTerm2)から VM へ SSH し、herdr は VM 上で起動。
+#   delivery 候補:
+#     herdr    = herdr 画面内トースト(herdr を見ているときだけ)
+#     system   = VM の OS 通知(notify-send)→ VM 側なので手元に届かない
+#     terminal = 外側の端末へ通知シーケンスを送る → SSH 越しに手元へ届く ★これを採用
+# terminal にすると iTerm2 / Windows Terminal 側でデスクトップ通知が出る(踏み台経由でもOK)。
+# macOS/Windows のデスクトップ通知は既定で音が鳴るので「通知音」も実質得られる。
+[ui.toast]
+delivery = "terminal"
+# position = "bottom-right"
 
-[theme.custom]
-# 現在タブ/アクティブ要素のハイライト。tmux の緑(colour2 ≒ #008000)に合わせる。
-accent = "#008000"
-green  = "#008000"
-# tmux のアクティブペイン枠 colour39(≒ #00afff)の名残。
-# 注: herdr にはペイン枠専用の色設定は無く、これは青系アクセント全般に効く。
-blue   = "#00afff"
+# ── サウンド(background の agent 状態変化を音で) ──
+# 注: この音は「herdr が動いている側」= リモート VM で再生されるため、手元には聞こえない
+#     (実際 mp3 プレイヤー未導入で WARN が出るだけ)。手元で鳴らすのは上の toast=terminal に任せる。
+#     herdr をローカル PC で直接動かす構成に変えたときだけ true + プレイヤー導入で有効化。
+[ui.sound]
+enabled = false
