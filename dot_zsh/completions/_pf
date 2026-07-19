@@ -1,0 +1,19 @@
+#compdef pf-add pf-rm pf-ls
+# pf-add/pf-rm/pf-ls の第1引数(ssh ホスト)を ~/.ssh/config の Host エイリアスで補完する。
+# 毎回ホストを手打ちする運用なので、config のエイリアスをそのまま候補に出す。
+
+_pf_ssh_hosts() {
+  local -a hosts
+  # "Host a b c" 行から、ワイルドカードを含まないトークンを候補に。
+  hosts=(${(f)"$(awk '
+    tolower($1) == "host" {
+      for (i = 2; i <= NF; i++)
+        if ($i !~ /[*?!]/) print $i
+    }' ~/.ssh/config 2>/dev/null)"})
+  (( ${#hosts} )) && _describe -t hosts 'ssh host' hosts
+}
+
+_arguments \
+  '1:ssh host:_pf_ssh_hosts' \
+  '2:local port:' \
+  '3:remote port:'

@@ -1,0 +1,21 @@
+# pf-rm: pf-add で足したポートフォワードを、接続を切らずに取り消す(ssh -O cancel)。
+#   接続先・ControlPath・ポートは pf-add と揃える必要があるので同じ規約を使う。
+#
+# 【使い方】
+#   pf-rm devvm 28000        # localhost:28000 の転送を止める
+#   pf-rm devvm 8080 80      # pf-add devvm 8080 80 で張ったものを止める
+pf-rm() {
+  emulate -L zsh
+  local host="$1" lport="$2" rport="${3:-$2}"
+  if [[ -z "$host" || -z "$lport" ]]; then
+    echo "usage: pf-rm <host> <local_port> [remote_port]" >&2
+    return 1
+  fi
+
+  local cp="$HOME/.ssh/cm/%r@%h:%p"
+  if ssh -o ControlPath="$cp" -O cancel -L "${lport}:localhost:${rport}" "$host"; then
+    echo "canceled   localhost:${lport} -> ${host}:${rport}"
+  else
+    return 1
+  fi
+}
