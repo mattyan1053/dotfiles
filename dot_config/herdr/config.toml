@@ -56,6 +56,15 @@ focus_pane_right = "prefix+l"
 split_vertical   = ["prefix+|", "prefix+v"]
 split_horizontal = "prefix+minus"
 
+# ── ペインの入れ替え(swap_pane) ──
+# herdr 既定は prefix+shift+h/j/k/l だが、そこは space 切替(Shift 体系)に使いたい。
+# 衝突を根絶するため swap_pane を明示的に Shift+矢印へ退避(「ペインを方向に押し出す」)。
+# ※ これを書かないと既定の shift+h/j/k/l が残り、space 切替と衝突する(Codex 指摘)。
+swap_pane_left  = "prefix+shift+left"
+swap_pane_down  = "prefix+shift+down"
+swap_pane_up    = "prefix+shift+up"
+swap_pane_right = "prefix+shift+right"
+
 # ── ペイン最大化/ズーム (tmux: bind -n C-z resize-pane -Z) ──
 # Ctrl は修飾子として使わない方針にしたので、prefix+z のみ(herdr デフォルト)。
 # 直接 Ctrl+z を外したことで、シェルのサスペンド(fg/bg)が使えるようになる。
@@ -71,6 +80,8 @@ next_tab     = "prefix+n"
 # herdr の既定思想では space/管理系は Shift。前後は縦リストの k=前 / j=次。
 # 番号ジャンプ(switch_workspace)は herdr 公式例どおり prefix+shift+1..9。
 # ピッカー(prefix+w, herdr デフォルト)も併用可。
+# 注: shift+h/j/k/l は既定で swap_pane に割り当てられているため、上の [swap_pane_*]
+#     で Shift+矢印へ退避済み。これにより shift+k/j を衝突なく space 切替に使える。
 previous_workspace = "prefix+shift+k"
 next_workspace     = "prefix+shift+j"
 switch_workspace   = "prefix+shift+1..9"
