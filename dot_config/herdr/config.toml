@@ -111,10 +111,13 @@ open_worktree = "prefix+shift+o"
 # ── herdr-compose プラグイン(= Shift: space 対象の操作) ──
 # 各 space の docker compose スタックを起動/停止(github.com/mattyan1053/herdr-compose)。
 # toggle: 起動中なら stop(メモリ解放・状態保持)、停止中なら start、コンテナ無しなら up -d。
-# down / up / refresh / gc はアクションメニューから(誤爆しやすい down に専用キーは付けない)。
+# down / up / refresh / gc は `herdr plugin action invoke compose.<action>` から
+# (誤爆しやすい down に専用キーは付けない)。
+# キーは s(start/stop)。shift+d は herdr デフォルトの close_workspace なので使わない
+# (herdr はカスタムがデフォルトを黙って上書きし、config check も警告しない)。
 # プラグイン本体は run_onchange_install-herdr-plugins.sh がインストールする。
 [[keys.command]]
-key = "prefix+shift+d"
+key = "prefix+shift+s"
 type = "plugin_action"
 command = "compose.toggle"
 description = "compose: toggle (start/stop)"
