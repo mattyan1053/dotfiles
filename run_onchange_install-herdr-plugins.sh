@@ -18,6 +18,15 @@ if ! herdr plugin list --json 2>/dev/null | grep -q '"herdr-file-viewer"'; then
   herdr plugin install smarzban/herdr-file-viewer --yes
 fi
 
+# gitlab-ci-status: 各 space の CI 状態ドット+open PR番号+レビュー状態をサイドバーに表示。
+# GitHub/GitLab を origin から自動判別(手元は GitHub 運用。pure Bash + jq/git/gh で動き、glab は
+# GitLab を使うときだけ必要)。config.toml で dots=prefix+shift+c / 詳細=prefix+alt+c /
+# My PRs=prefix+alt+m を割当。https://github.com/krystof018/herdr-git-status
+# 注: プラグイン id はリポジトリ名ではなく後方互換の "gitlab-ci-status"(list もこの id で照合)。
+if ! herdr plugin list --json 2>/dev/null | grep -q '"gitlab-ci-status"'; then
+  herdr plugin install krystof018/herdr-git-status --yes
+fi
+
 # 任意レンダラ(有ると file-viewer の見た目が向上。未導入なら素テキストにフォールバック):
 #   - 差分整形 delta : Rocky/RHEL では EPEL の "git-delta"(コマンド名は delta)。導入済。
 #       sudo dnf install -y epel-release && sudo dnf install -y git-delta

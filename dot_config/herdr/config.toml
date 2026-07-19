@@ -17,6 +17,7 @@
 #   - エージェント運用: 状態順サイドバー・エージェント間移動キー・ペイン枠にラベル表示
 #   - git worktree キー / lazygit ポップアップ
 #   - VSCode 代替: file-viewer(ツリー+差分+MDプレビュー / prefix+alt+f=タブ・alt+shift+f=split)、全体 grep(rg+fzf→エディタ / prefix+alt+s)
+#   - CI/PR ステータス: 各 space のサイドバーに CI 状態ドット+PR番号+レビュー状態(gitlab-ci-status / dots=prefix+shift+c, 詳細=prefix+alt+c, My PRs=prefix+alt+m)
 #
 # 【修飾子の法則(herdr の既定思想に合わせる)】
 #   無印 (prefix+<key>)      = タブ / ペインの日常操作(移動・分割・ズーム・リサイズ)
@@ -176,6 +177,39 @@ command = "hgrep"
 description = "grep (rg live search → open in editor)"
 width = "90%"
 height = "90%"
+
+# ── CI / PR ステータス(gitlab-ci-status プラグイン)──
+# 各 space の「現在ブランチの CI 状態(🟢passed 🟡running 🔴failed ⚪none)+ open PR番号
+# (#123)+ レビュー状態(💬変更要求 ⚠️コンフリクト ✅approved)」をサイドバーに表示。
+# GitHub/GitLab を origin から自動判別(手元は GitHub 運用。glab 未導入でも gh だけで動く)。
+# 実装は herdr workspace rename で space ラベル頭にドットを前置する方式(専用トークンではない
+# ので [ui.sidebar.spaces] の rows は変更不要)。stop で元ラベルに復元。プラグイン本体の導入は
+# run_onchange_install-herdr-plugins.sh 参照。id は後方互換で "gitlab-ci-status"。
+# 注意: マージ済み判定は無い(open PR のみ表示 = マージされるとトークンが消えるだけ)。
+#
+# キーは修飾子の法則に従って2系統に分ける:
+#   - dots トグル = 全 space のラベルを装飾する space 全体の操作 → Shift(compose の shift+s と同系統)。
+#     c = CI。prefix+c(新規タブ)とは別キー。
+#   - 詳細ペイン / My MRs = 補助ツールを開く操作 → Alt(file-viewer・hgrep と同系統)。
+[[keys.command]]
+key = "prefix+shift+c"
+type = "plugin_action"
+command = "gitlab-ci-status.toggle"
+description = "CI status dots (toggle)"
+
+# 現在の space の CI 詳細ペイン(最新 run・open PR・直近の失敗。#id は OSC8 リンク)。
+[[keys.command]]
+key = "prefix+alt+c"
+type = "plugin_action"
+command = "gitlab-ci-status.open"
+description = "CI status pane"
+
+# 自分の open PR 一覧(全リポジトリ横断・ready / needs-action で分類)。
+[[keys.command]]
+key = "prefix+alt+m"
+type = "plugin_action"
+command = "gitlab-ci-status.open-mr"
+description = "My PRs pane"
 
 # ── マウス / UI ──
 # tmux では "set -g mouse off" にしていたが、herdr はマウス操作が目玉機能のため
