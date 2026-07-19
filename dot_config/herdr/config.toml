@@ -134,15 +134,21 @@ prompt_new_tab_name = false
 # タブが1つのときはタブ行を隠してスッキリ。新規タブは prefix+c で作れる。
 hide_tab_bar_when_single_tab = true
 
-# ── 通知(エージェントがブロック/完了したときのポップアップ) ──
+# ── 通知(エージェントがブロック/完了したときの通知) ──
+# 使い方: 手元(Windows Terminal / iTerm2)から VM へ SSH し、herdr は VM 上で起動。
+#   delivery 候補:
+#     herdr    = herdr 画面内トースト(herdr を見ているときだけ)
+#     system   = VM の OS 通知(notify-send)→ VM 側なので手元に届かない
+#     terminal = 外側の端末へ通知シーケンスを送る → SSH 越しに手元へ届く ★これを採用
+# terminal にすると iTerm2 / Windows Terminal 側でデスクトップ通知が出る(踏み台経由でもOK)。
+# macOS/Windows のデスクトップ通知は既定で音が鳴るので「通知音」も実質得られる。
 [ui.toast]
-# herdr の画面内にトースト表示。
-delivery = "herdr"
+delivery = "terminal"
 # position = "bottom-right"
 
-# ── サウンド(背景ワークスペースのエージェント状態変化を音で) ──
+# ── サウンド(background の agent 状態変化を音で) ──
+# 注: この音は「herdr が動いている側」= リモート VM で再生されるため、手元には聞こえない
+#     (実際 mp3 プレイヤー未導入で WARN が出るだけ)。手元で鳴らすのは上の toast=terminal に任せる。
+#     herdr をローカル PC で直接動かす構成に変えたときだけ true + プレイヤー導入で有効化。
 [ui.sound]
-enabled = true
-# 特定エージェントを個別に消音したい場合:
-# [ui.sound.agents]
-# droid = "off"
+enabled = false
