@@ -1,0 +1,7 @@
+# Machine-specific data for chezmoi templates.
+# Default values live here; override per-machine in ~/.config/chezmoi/chezmoi.toml.
+
+# Whether the Codex CLI / plugin is available on this machine.
+# Codex-capable terminals set `codex = true` in their local chezmoi config;
+# it stays false everywhere else (e.g. work terminals without Codex).
+codex: false

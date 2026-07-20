@@ -35,10 +35,34 @@ $ chezmoi update # dotfilesをpullする
 $ chezmoi apply # 変更を適用する
 ```
 
-## Claude Code plugin
+## Claude Code
 
-Codex plugin は、必要な端末で一度だけ手動でインストールする。
+`~/.claude/settings.json` は `dot_claude/settings.json.tmpl` で管理している。
+
+### Codex を使う端末の設定
+
+Codex は端末ごとに使える／使えないが分かれるため、`codex` データ変数で出し分けている
+（デフォルトは `.chezmoidata.yaml` の `codex: false`）。
+
+Codex を使う端末では、ローカルの chezmoi 設定に以下を足すと
+`settings.json` に Codex plugin の有効化が含まれるようになる。
+
+```toml
+# ~/.config/chezmoi/chezmoi.toml
+[data]
+    codex = true
+```
+
+そのうえで plugin 本体を一度だけ手動でインストールする。
 
 ```sh
 claude plugin install codex@openai-codex --scope user
 ```
+
+### permissions.deny と `.env.example`
+
+Claude Code の permission は `deny → ask → allow` で最初にマッチが勝ち、
+deny に例外（gitignore の `!` のような除外）を彫り込めない。
+そのため `.env.*` を一括 deny すると `.env.example` も読めなくなる。
+`.env.example` / `.env.sample` を読めるようにするため、deny では
+`.env.dev` / `.env.stg` / `.env.prod` などの実ファイルを個別に列挙している。
