@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # Claude Code statusLine command
-# Mirrors the bash PS1 from ~/.bash_prompt:
-#   [time] [user@host] [cwd] [git branch] [usage 5h/7d]
+#   [cwd] [git branch] [usage 5h/7d + reset times]
 
 input=$(cat)
 
@@ -9,22 +8,26 @@ input=$(cat)
 # (tab-separated). rate_limits.* is present only on subscription plans and
 # recent CLI versions; it falls back to "" and the usage segment is hidden.
 cwd=""
-five_pct=""
-seven_pct=""
+five_pct=""; five_reset=""
+seven_pct=""; seven_reset=""
 if command -v jq >/dev/null 2>&1; then
-  IFS=$'\t' read -r cwd five_pct seven_pct < <(
+  IFS=$'\t' read -r cwd five_pct five_reset seven_pct seven_reset < <(
     printf '%s' "$input" | jq -r '
       [ (.cwd // .workspace.current_dir // "")
       , (.rate_limits.five_hour.used_percentage // "")
+      , (.rate_limits.five_hour.resets_at // "")
       , (.rate_limits.seven_day.used_percentage // "")
+      , (.rate_limits.seven_day.resets_at // "")
       ] | @tsv'
   )
 fi
 [ -z "$cwd" ] && cwd="$(pwd)"
 
-user="$(whoami)"
-host="$(hostname -s)"
-time_str="$(date +%H:%M:%S)"
+# Format a Unix epoch, portable across GNU (-d @N) and BSD/macOS (-r N) date.
+fmt_epoch() { # <epoch> <format>
+  [ -n "$1" ] || return 1
+  date -d "@$1" "+$2" 2>/dev/null || date -r "$1" "+$2" 2>/dev/null
+}
 
 # Git branch (skip optional lock to avoid interference)
 git_branch=""
@@ -40,10 +43,6 @@ fi
 # contain printf metacharacters (e.g. a path ending in "100%done"), so they
 # must never be part of the format string.
 esc=$'\e'
-# Segment: time (black on white)
-seg_time="${esc}[30;47m  ${time_str} ${esc}[0m"
-# Segment: user@host (white on blue)
-seg_user="${esc}[37;44m ${user}@${host} ${esc}[0m"
 # Segment: cwd (white on red)
 seg_cwd="${esc}[00;41m  ${cwd} ${esc}[0m"
 
@@ -51,15 +50,21 @@ seg_cwd="${esc}[00;41m  ${cwd} ${esc}[0m"
 seg_git=""
 [ -n "$git_branch" ] && seg_git="${esc}[30;43m  ${git_branch} ${esc}[0m"
 
-# Segment: Claude usage (5h / 7d rate-limit percentages).
+# Segment: Claude usage (5h / 7d rate-limit percentages + reset times).
 # Colored by the higher of the two: <50 magenta, 50-79 yellow, >=80 red.
 seg_usage=""
 if [ -n "$five_pct" ] || [ -n "$seven_pct" ]; then
   five_int="${five_pct%%.*}"
   seven_int="${seven_pct%%.*}"
   usage_text=""
-  [ -n "$five_pct" ] && usage_text="5h ${five_int:-0}%"
-  [ -n "$seven_pct" ] && usage_text="${usage_text:+$usage_text · }7d ${seven_int:-0}%"
+  if [ -n "$five_pct" ]; then
+    r=$(fmt_epoch "$five_reset" "%H:%M")
+    usage_text="5h ${five_int:-0}%${r:+ ⟳$r}"
+  fi
+  if [ -n "$seven_pct" ]; then
+    r=$(fmt_epoch "$seven_reset" "%m/%d")
+    usage_text="${usage_text:+$usage_text · }7d ${seven_int:-0}%${r:+ ⟳$r}"
+  fi
 
   max_pct=0
   [ -n "$five_int" ] && [ "$five_int" -gt "$max_pct" ] 2>/dev/null && max_pct="$five_int"
@@ -74,4 +79,4 @@ if [ -n "$five_pct" ] || [ -n "$seven_pct" ]; then
   seg_usage="${esc}[${usage_color}m  ${usage_text} ${esc}[0m"
 fi
 
-printf '%s' "${seg_time}${seg_user}${seg_cwd}${seg_git}${seg_usage}"
+printf '%s' "${seg_cwd}${seg_git}${seg_usage}"
