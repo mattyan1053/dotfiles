@@ -39,21 +39,13 @@ $ chezmoi apply # 変更を適用する
 
 `~/.claude/settings.json` は `dot_claude/settings.json.tmpl` で管理している。
 
-### Codex を使う端末の設定
+### Codex plugin の出し分け
 
-Codex は端末ごとに使える／使えないが分かれるため、`codex` データ変数で出し分けている
-（デフォルトは `.chezmoidata.yaml` の `codex: false`）。
+Codex plugin 設定（`enabledPlugins` / `extraKnownMarketplaces`）は、
+テンプレート内で `codex` コマンドの有無を `lookPath` で判定して自動で出し分けている。
+`codex` が PATH にある端末だけ設定が含まれるので、端末ごとの手動設定は不要。
 
-Codex を使う端末では、ローカルの chezmoi 設定に以下を足すと
-`settings.json` に Codex plugin の有効化が含まれるようになる。
-
-```toml
-# ~/.config/chezmoi/chezmoi.toml
-[data]
-    codex = true
-```
-
-そのうえで plugin 本体を一度だけ手動でインストールする。
+plugin 本体は一度だけ手動でインストールする（これで `codex` コマンドが入る）。
 
 ```sh
 claude plugin install codex@openai-codex --scope user

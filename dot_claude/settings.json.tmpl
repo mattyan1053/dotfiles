@@ -28,7 +28,7 @@
       "Read(**/*.key)",
       "Read(**/*.crt)"
     ]
-  }{{ if .codex }},
+  }{{ if lookPath "codex" }},
   "enabledPlugins": {
     "codex@openai-codex": true
   },
