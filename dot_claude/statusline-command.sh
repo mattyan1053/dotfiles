@@ -59,11 +59,11 @@ if [ -n "$five_pct" ] || [ -n "$seven_pct" ]; then
   usage_text=""
   if [ -n "$five_pct" ]; then
     r=$(fmt_epoch "$five_reset" "%H:%M")
-    usage_text="5h ${five_int:-0}%${r:+ ⟳$r}"
+    usage_text="5h ${five_int:-0}%${r:+ ⟳ $r}"
   fi
   if [ -n "$seven_pct" ]; then
     r=$(fmt_epoch "$seven_reset" "%m/%d")
-    usage_text="${usage_text:+$usage_text · }7d ${seven_int:-0}%${r:+ ⟳$r}"
+    usage_text="${usage_text:+$usage_text · }7d ${seven_int:-0}%${r:+ ⟳ $r}"
   fi
 
   max_pct=0
