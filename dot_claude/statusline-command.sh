@@ -20,18 +20,23 @@ if git -C "$cwd" rev-parse --is-inside-work-tree --no-optional-locks 2>/dev/null
     || git -C "$cwd" rev-parse --short HEAD 2>/dev/null)
 fi
 
-# Color segments (matching the original PS1 style)
+# Color segments (matching the original PS1 style).
+# Use an actual ESC byte via ANSI-C quoting so the segments can be printed
+# with a constant "%s" format. cwd and branch names are untrusted and may
+# contain printf metacharacters (e.g. a path ending in "100%done"), so they
+# must never be part of the format string.
+esc=$'\e'
 # Segment: time (black on white)
-seg_time="\e[30;47m  ${time_str} \e[0m"
+seg_time="${esc}[30;47m  ${time_str} ${esc}[0m"
 # Segment: user@host (white on blue)
-seg_user="\e[37;44m ${user}@${host} \e[0m"
+seg_user="${esc}[37;44m ${user}@${host} ${esc}[0m"
 # Segment: cwd (white on red)
-seg_cwd="\e[00;41m  ${cwd} \e[0m"
+seg_cwd="${esc}[00;41m  ${cwd} ${esc}[0m"
 
 if [ -n "$git_branch" ]; then
   # Segment: git branch (black on yellow)
-  seg_git="\e[30;43m  ${git_branch} \e[0m"
-  printf "${seg_time}${seg_user}${seg_cwd}${seg_git}"
+  seg_git="${esc}[30;43m  ${git_branch} ${esc}[0m"
+  printf '%s' "${seg_time}${seg_user}${seg_cwd}${seg_git}"
 else
-  printf "${seg_time}${seg_user}${seg_cwd}"
+  printf '%s' "${seg_time}${seg_user}${seg_cwd}"
 fi
