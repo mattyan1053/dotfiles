@@ -34,3 +34,11 @@ $ chezmoi re-add # 管理対象を更新する
 $ chezmoi update # dotfilesをpullする
 $ chezmoi apply # 変更を適用する
 ```
+
+## Claude Code plugin
+
+Codex plugin は、必要な端末で一度だけ手動でインストールする。
+
+```sh
+claude plugin install codex@openai-codex --scope user
+```
