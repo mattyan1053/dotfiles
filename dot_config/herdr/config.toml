@@ -30,6 +30,11 @@
 #
 # 反映方法: `herdr server reload-config`(または prefix+shift+r)。設定検証は `herdr config check`。
 
+# ── 初回起動 ──
+# 設定はこのファイルで完結しているため、herdr のオンボーディングウィザードは出さない。
+# (herdr がウィザード完了時に自動で書き込む値を、そのまま管理下に置いたもの)
+onboarding = false
+
 # ── 見た目 ──
 # tmux では現在ウィンドウを緑にしていたが、herdr ではテーマ本来の配色を活かすため
 # tokyo-night をそのまま使う(カスタム色の上書きはしない)。
