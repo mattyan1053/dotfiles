@@ -19,7 +19,9 @@ alias cdgitroot='cd $(git rev-parse --show-toplevel)'
 # Uncomment the following line if you don't like systemctl's auto-paging feature:
 # export SYSTEMD_PAGER=
 
-export PATH="$HOME/.local/share/chezmoi/bin:$PATH"
+# chezmoi の bin は末尾に置く。同梱の lazygit は Linux 用バイナリなので、
+# 先頭に置くと mac で Homebrew 版を隠してしまう。
+export PATH="$PATH:$HOME/.local/share/chezmoi/bin"
 
 source $HOME/.git-completion.sh
 source $HOME/.git-prompt.sh
