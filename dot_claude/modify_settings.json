@@ -1,0 +1,59 @@
+#!/bin/sh
+# ~/.claude/settings.json は Claude Code 本体・herdr のインテグレーション・プラグインが
+# それぞれ随時書き換えるファイルで、書き込みのたびにキー順まで変わる。
+# そのためファイル全体を管理せず、dotfiles が所有するキーだけを実体にマージする。
+# (全体を管理すると chezmoi diff がキー順の差分を永久に出し続ける)
+#
+# 所有しないもの:
+#   model                                 -> Claude Code がセッションのモデルを書き戻す
+#   hooks                                 -> `herdr integration install claude` が登録する
+#   enabledPlugins / extraKnownMarketplaces -> プラグイン導入時に Claude Code が登録する
+#
+# chezmoi は実体の中身を stdin で渡し、stdout を新しい中身として使う。
+
+set -eu
+
+existing=$(cat)
+
+# jq が無い環境では実体をそのまま通す(設定を壊さない)
+if ! command -v jq >/dev/null 2>&1; then
+	printf '%s' "$existing"
+	exit 0
+fi
+
+# 未作成 / 壊れた JSON は空オブジェクトから作り直す
+if [ -z "$existing" ] || ! printf '%s' "$existing" | jq -e . >/dev/null 2>&1; then
+	existing='{}'
+fi
+
+printf '%s' "$existing" | jq '. * {
+  "theme": "dark",
+  "tui": "fullscreen",
+  "agentPushNotifEnabled": true,
+  "inputNeededNotifEnabled": true,
+  "skipAutoPermissionPrompt": true,
+  "statusLine": {
+    "type": "command",
+    "command": "bash ~/.claude/statusline-command.sh"
+  },
+  "permissions": {
+    "defaultMode": "auto",
+    "deny": [
+      "Read(**/.env)",
+      "Read(**/.env.local)",
+      "Read(**/.env.*.local)",
+      "Read(**/.env.dev)",
+      "Read(**/.env.development)",
+      "Read(**/.env.stg)",
+      "Read(**/.env.staging)",
+      "Read(**/.env.prod)",
+      "Read(**/.env.production)",
+      "Read(**/.env.test)",
+      "Read(**/secrets/**)",
+      "Read(**/credentials/**)",
+      "Read(**/*.pem)",
+      "Read(**/*.key)",
+      "Read(**/*.crt)"
+    ]
+  }
+}'
