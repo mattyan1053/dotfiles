@@ -62,6 +62,10 @@ ssh 経由で clone してくる場合、`--ssh` オプションをつけるこ�
 してあるが、`$HOME/.local/share/chezmoi/bin` を PATH に通してある(`dot_zshrc.tmpl` /
 `dot_bashrc.tmpl`)ので、apply しなくてもそのまま実行できる。
 
+同梱の lazygit は **Linux(x86-64)用のバイナリ**なので、PATH では chezmoi の `bin` を
+**末尾**に置いている。こうしておくと mac では Homebrew などで入れた lazygit が優先され、
+同梱バイナリは VM 側で lazygit が未インストールのときだけフォールバックとして効く。
+
 ## Usage
 
 ```sh

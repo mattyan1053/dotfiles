@@ -1,5 +1,7 @@
 # Path: ensure common user bin dirs and chezmoi-managed bin are available
-export PATH="$HOME/.local/share/chezmoi/bin:$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH"
+# chezmoi の bin は末尾に置く。同梱の lazygit は Linux 用バイナリなので、
+# 先頭に置くと mac で Homebrew 版を隠してしまう。
+export PATH="$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH:$HOME/.local/share/chezmoi/bin"
 
 {{ if eq .chezmoi.os "linux" }}
 export PATH="/opt/nvim-linux-x86_64/bin:$PATH"
