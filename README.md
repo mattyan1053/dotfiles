@@ -39,7 +39,7 @@ ssh 経由で clone してくる場合、`--ssh` オプションをつけるこ�
 | Editor | Neovim([lazy.nvim](https://github.com/folke/lazy.nvim) で初回に自動 bootstrap)/ vim |
 | Terminal | [herdr](https://herdr.dev)(tmux から移行。`dot_tmux.conf` は残置) |
 | Git | lazygit / commit template / 補完 |
-| Claude Code | 設定(部分管理)と[ステータスライン](dot_claude/statusline-command.sh) |
+| Claude Code | 設定([部分管理](docs/ai-agents.md))とステータスライン |
 | 自作コマンド | `bin/hgrep`(全体 grep)、`pf-add`/`pf-rm`/`pf-ls`(ポートフォワード) |
 
 ## リポジトリ構成
@@ -50,6 +50,7 @@ ssh 経由で clone してくる場合、`--ssh` オプションをつけるこ�
 ├── .chezmoiscripts/     # apply 時に一度だけ流れるスクリプト
 ├── .github/workflows/   # CI: chezmoi の検証 + テンプレート構文チェック
 ├── bin/                 # PATH に載せて直接叩くもの(配布対象外)
+├── docs/                # 設計メモ(配布対象外)
 ├── dot_claude/          # Claude Code
 ├── dot_config/          # nvim / lazygit / herdr
 ├── dot_zsh/             # aliases / completions / functions
@@ -87,36 +88,11 @@ chezmoi diff          # 適用前に差分を見る
 
 フォントは [MesloLGS NF Regular](https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Regular.ttf) を推奨(bash/zsh の表示に利用しているため)。
 
-## 設計メモ
+## Docs
 
-### Claude Code の設定は「部分管理」
+「なぜこうしているか」は `docs/` にまとめてある。
 
-`~/.claude/settings.json` は Claude Code 本体・herdr のインテグレーション・プラグインが
-それぞれ随時書き換えるファイルで、書き込みのたびにキーの並び順まで変わる。
-ファイル全体を管理すると `chezmoi diff` がキー順の差分を永久に出し続けるため、
-chezmoi の `modify_` スクリプト(`dot_claude/modify_settings.json`)で
-**自分が決めたキーだけを実体にマージする**方式にしている。
-
-| 扱い | キー |
+| | 内容 |
 | --- | --- |
-| dotfiles が所有 | `theme` / `tui` / 通知2種 / `skipAutoPermissionPrompt` / `statusLine` / `permissions` |
-| 各ツールに任せる | `model`(セッションのモデルが書き戻る)/ `hooks`(herdr が登録)/ `enabledPlugins`・`extraKnownMarketplaces`(プラグインが登録) |
-
-Codex plugin は一度だけ手動で入れる。
-
-```sh
-claude plugin install codex@openai-codex --scope user
-```
-
-### `permissions.deny` と `.env.example`
-
-Claude Code の permission は `deny → ask → allow` で最初にマッチが勝ち、
-deny に例外(gitignore の `!` のような除外)を彫り込めない。
-そのため `.env.*` を一括 deny すると `.env.example` も読めなくなる。
-`.env.example` / `.env.sample` を読めるようにするため、deny では
-`.env.dev` / `.env.stg` / `.env.prod` などの実ファイルを個別に列挙している。
-
-### ポートフォワード
-
-VSCode が担っていたポート転送は、接続元(手元の Mac)で動く `pf-add` / `pf-rm` / `pf-ls` に
-置き換えている。詳細は [PORT-FORWARDING.md](PORT-FORWARDING.md) を参照。
+| [AI エージェントの設定](docs/ai-agents.md) | Claude Code / Codex / Gemini をどこまで管理しているか、`settings.json` を部分管理にしている理由 |
+| [ポートフォワーディング](docs/port-forwarding.md) | VSCode のポート転送を `pf-add` / `pf-rm` / `pf-ls` に置き換えた話 |

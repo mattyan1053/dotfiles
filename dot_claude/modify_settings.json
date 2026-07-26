@@ -10,6 +10,7 @@
 #   enabledPlugins / extraKnownMarketplaces -> プラグイン導入時に Claude Code が登録する
 #
 # chezmoi は実体の中身を stdin で渡し、stdout を新しい中身として使う。
+# 経緯と線引きの詳細: docs/ai-agents.md
 
 set -eu
 
